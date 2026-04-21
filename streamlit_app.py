@@ -4,7 +4,7 @@ import streamlit as st
 st.set_page_config(page_title="EWS Pertanian Belu", layout="wide")
 
 st.title("🌾 Radar Pertanian: Kabupaten Belu")
-st.write("Sistem Peringatan Dini (EWS) Ancaman Ulat Gerayak")
+st.write("Sistem Peringatan Dini (EWS) Ancaman Hama")
 st.markdown("---")
 
 # Membuat tata letak 2 kolom
@@ -42,7 +42,7 @@ with col2:
     
     # Logika memunculkan pesan warna-warni
     if indeks_risiko >= 70:
-        st.error(f"🚨 AWAS: Risiko ledakan Ulat Gerayak di {lokasi} Kritis. PPL harap siaga!")
+        st.error(f"🚨 AWAS: Risiko ledakan Hama di {lokasi} Kritis. PPL harap siaga!")
     elif indeks_risiko >= 30:
         st.warning(f"⚠️ WASPADA: Pantau perkembangan telur hama di {lokasi}.")
     else:
