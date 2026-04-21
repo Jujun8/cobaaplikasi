@@ -8,24 +8,74 @@ st.write("Portal Satu Data Pemerintah Kabupaten Belu")
 st.markdown("---")
 
 # ==========================================
-# SIDEBAR: DAFTAR INSTANSI
+# SIDEBAR: DAFTAR SELURUH INSTANSI
 # ==========================================
 st.sidebar.title("Navigasi Instansi")
 st.sidebar.write("Pilih sektor untuk memantau data dan peringatan dini:")
 
+# Daftar Instansi Lengkap sesuai struktur Pemkab Belu
 daftar_dinas = [
+    # --- Sekretariat & Inspektorat ---
+    "Sekretariat DPRD",
+    "Inspektorat Daerah",
+    
+    # --- Dinas Daerah ---
+    "Dinas Kesehatan",
+    "Dinas Pendidikan, Kepemudaan dan Olahraga",
     "Dinas Pertanian dan Ketahanan Pangan",
     "Dinas Peternakan dan Perikanan",
-    "Dinas Kesehatan",
-    "Dinas Pendidikan, Kepemudaan dan Olah Raga",
-    "Dinas Pemberdayaan Perempuan, Perlindungan Anak, PP dan KB",
-    "Sekretariat Dewan (DPRD)"
+    "Dinas Pekerjaan Umum dan Perumahan Rakyat",
+    "Dinas Lingkungan Hidup dan Perhubungan",
+    "Dinas Kependudukan dan Pencatatan Sipil",
+    "Dinas Koperasi, Tenaga Kerja dan Transmigrasi",
+    "Dinas Parawisata dan Kebudayaan",
+    "Dinas Pemberdayaan Perempuan, Perlindungan Anak, Pengendalian Penduduk dan Keluarga Berencana",
+    "Dinas Penanaman Modal dan Pelayanan Terpadu Satu Piintu",
+    "Dinas Komunikasi dan Informatika",
+    "Dinas Perindustrian dan Perdagangan",
+    "Dinas Perpustakaan dan Kearsipan",
+    "Dinas Sosial, Pemberdayaan Masyarakat dan Desa",
+    
+    # --- Badan Daerah ---
+    "Badan Penanggulangan Bencana Daerah",
+    "Badan Perencanaan Pembangunan, Penelitian dan Pengembangan Daerah",
+    "Badan Pengelola Keuangan dan Aset Daerah",
+    "Badan Pendapatan Daerah",
+    "Badan Kesatuan Bangsa dan Politik",
+    "Badan Kepegawaian dan Pengembangan Sumber Daya Manusia Daerah",
+    "Badan Pengelola Perbatasan Daerah",
+    
+    # --- Bagian Setda ---
+    "Bagian Hukum",
+    "Bagian Organisasi Setda Belu",
+    "Bagian Kesejahteraan Rakyat Setda Belu",
+    "Bagian Pemerintahan Setda Belu",
+    "Bagian Pengadaan Barang dan Jasa Setda Belu",
+    "Bagian Administrasi Pembangunan Setda Belu",
+    "Bagian Perekonomian dan Sumber Daya Alam Setda Belu",
+    "Bagian Protokol dan Komunikasi Pimpinan Setda Belu",
+    "Bagian Umum Setda Belu",
+    
+    # --- Unit Lainnya & Kecamatan ---
+    "Satuan Polisi Pamong Praja",
+    "RSUD Mgr. Gabriel Manek, SVD Atambua",
+    "Kecamatan Atambua Barat",
+    "Kecamatan Kota Atambua",
+    "Kecamatan Atambua Selatan",
+    "Kecamatan Tasifeto Timur",
+    "Kecamatan Lamaknen",
+    "Kecamatan Lamaknen Selatan",
+    "Kecamatan Kakuluk Mesak",
+    "Kecamatan Lasiolat",
+    "Kecamatan Nanaet Duasbesi",
+    "Kecamatan Raihat",
+    "Kecamatan Raimanuk"
 ]
 
 pilihan_dinas = st.sidebar.selectbox("Instansi Pemantau:", daftar_dinas)
 
 # Membuat tata letak 2 kolom untuk konten utama
-col1, col2 = st.columns([1.2, 1]) # Kolom kiri sedikit lebih lebar
+col1, col2 = st.columns([1.2, 1])
 
 # Variabel global penampung hasil
 indeks_risiko = 0
@@ -38,7 +88,6 @@ pesan_peringatan = ""
 
 with col1:
     st.subheader(f"📊 Parameter Data: {pilihan_dinas}")
-    st.info("TIPS CSV: Di sinilah Anda nantinya memasukkan kode `pd.read_csv()` untuk menarik data otomatis dari GitHub.")
     
     # 1. DINAS PERTANIAN
     if pilihan_dinas == "Dinas Pertanian dan Ketahanan Pangan":
@@ -50,83 +99,64 @@ with col1:
         if 28 <= suhu <= 32: indeks_risiko += 25
         if kelembapan >= 80: indeks_risiko += 35
         if serangan_hama > 20: indeks_risiko += 40
-        pesan_peringatan = f"Risiko gagal panen/wabah ulat gerayak di {lokasi} meningkat akibat anomali cuaca."
+        pesan_peringatan = f"Risiko wabah ulat gerayak/hama di {lokasi} meningkat akibat anomali cuaca."
 
-    # 2. DINAS PETERNAKAN (Fokus: Penyakit ASF/Demam Babi Afrika yang rawan di NTT)
+    # 2. DINAS PETERNAKAN
     elif pilihan_dinas == "Dinas Peternakan dan Perikanan":
-        lokasi = st.selectbox("Desa/Kecamatan Pantauan", ["Atambua Selatan", "Tasifeto Barat", "Kakuluk Mesak"])
-        kematian_ternak = st.number_input("Laporan Kematian Babi/Ternak Mendadak (Ekor)", 0, 100, 5)
+        kematian_ternak = st.number_input("Kematian Babi/Ternak Mendadak (Ekor)", 0, 100, 5)
         stok_vaksin = st.radio("Ketersediaan Vaksin/Disinfektan", ["Aman", "Menipis", "Kosong"])
         
         if kematian_ternak >= 10: indeks_risiko += 60
         elif kematian_ternak >= 3: indeks_risiko += 30
         if stok_vaksin == "Kosong": indeks_risiko += 40
         elif stok_vaksin == "Menipis": indeks_risiko += 20
-        pesan_peringatan = f"Indikasi penyebaran virus ASF (Flu Babi) di {lokasi}. Tingkat kematian: {kematian_ternak} ekor."
+        pesan_peringatan = f"Indikasi penyebaran penyakit ternak. Tingkat kematian: {kematian_ternak} ekor."
 
-    # 3. DINAS KESEHATAN (Fokus: KLB DBD/Malaria)
+    # 3. DINAS KESEHATAN
     elif pilihan_dinas == "Dinas Kesehatan":
-        lokasi = st.selectbox("Puskesmas Pantauan", ["Puskesmas Kota Atambua", "Puskesmas Umanen", "Puskesmas Silawan"])
-        kasus_baru = st.number_input("Tambahan Kasus DBD/Malaria Minggu Ini", 0, 100, 12)
-        curah_hujan = st.selectbox("Intensitas Hujan Mingguan", ["Rendah", "Sedang", "Tinggi (Banyak Genangan)"])
+        kasus_baru = st.number_input("Tambahan Kasus DBD/Malaria/Penyakit Menular", 0, 100, 12)
+        curah_hujan = st.selectbox("Kondisi Lingkungan", ["Normal", "Banyak Genangan Air"])
         
-        if kasus_baru >= 10: indeks_risiko += 50
-        elif kasus_baru >= 5: indeks_risiko += 25
-        if curah_hujan == "Tinggi (Banyak Genangan)": indeks_risiko += 50
-        pesan_peringatan = f"Potensi Kejadian Luar Biasa (KLB) penyakit berbasis nyamuk di wilayah kerja {lokasi}."
+        if kasus_baru >= 10: indeks_risiko += 60
+        elif kasus_baru >= 5: indeks_risiko += 30
+        if curah_hujan == "Banyak Genangan Air": indeks_risiko += 40
+        pesan_peringatan = f"Potensi KLB Penyakit Menular. Segera lakukan intervensi medis dan lingkungan."
 
-    # 4. DINAS PENDIDIKAN (Fokus: Bangunan Rawan Ambruk / Putus Sekolah)
-    elif pilihan_dinas == "Dinas Pendidikan, Kepemudaan dan Olah Raga":
-        lokasi = st.selectbox("Tingkat Pendidikan", ["SD Negeri", "SMP Negeri"])
-        laporan_rusak = st.number_input("Laporan Atap/Gedung Rusak Berat", 0, 50, 2)
+    # 4. DINAS PENDIDIKAN
+    elif pilihan_dinas == "Dinas Pendidikan, Kepemudaan dan Olahraga":
+        laporan_rusak = st.number_input("Laporan Atap/Gedung Sekolah Rusak Berat", 0, 50, 2)
         kehadiran = st.slider("Rata-rata Tingkat Kehadiran Siswa (%)", 0, 100, 80)
         
         if laporan_rusak >= 5: indeks_risiko += 50
-        elif laporan_rusak >= 1: indeks_risiko += 20
         if kehadiran < 75: indeks_risiko += 50
-        pesan_peringatan = f"Terdapat anomali kehadiran siswa ({kehadiran}%) dan {laporan_rusak} gedung rusak di tingkat {lokasi}. Risiko keselamatan/putus sekolah."
+        pesan_peringatan = f"Anomali kehadiran siswa ({kehadiran}%) & {laporan_rusak} gedung rusak. Risiko keselamatan belajar."
 
-    # 5. DINAS DP3AP2KB (Fokus: Stunting & Kekerasan)
-    elif pilihan_dinas == "Dinas Pemberdayaan Perempuan, Perlindungan Anak, PP dan KB":
-        lokasi = st.selectbox("Fokus Isu", ["Pemantauan Kasus Stunting", "Kekerasan Dalam Rumah Tangga (KDRT)"])
-        laporan_masuk = st.number_input("Jumlah Laporan Kasus Baru Bulan Ini", 0, 100, 15)
-        target_batas = st.number_input("Batas Maksimal Toleransi (Threshold) Kasus", 1, 50, 10)
+    # 5. BPBD (BADAN PENANGGULANGAN BENCANA DAERAH) - *BARU*
+    elif pilihan_dinas == "Badan Penanggulangan Bencana Daerah":
+        curah_hujan_bpbd = st.slider("Intensitas Curah Hujan (mm/hari)", 0, 200, 80)
+        debit_sungai = st.radio("Status Debit Sungai/Bendungan", ["Normal", "Siaga", "Waspada", "Awas (Meluap)"])
         
-        if laporan_masuk > target_batas * 2: indeks_risiko += 80
-        elif laporan_masuk > target_batas: indeks_risiko += 40
-        pesan_peringatan = f"Lonjakan drastis pada {lokasi}. Laporan masuk ({laporan_masuk}) melampaui batas toleransi daerah."
+        if curah_hujan_bpbd > 100: indeks_risiko += 50
+        elif curah_hujan_bpbd > 50: indeks_risiko += 20
+        if debit_sungai == "Awas (Meluap)": indeks_risiko += 50
+        elif debit_sungai == "Waspada": indeks_risiko += 30
+        pesan_peringatan = f"Peringatan Dini Bencana Hidrometeorologi! Status sungai: {debit_sungai}."
 
-    # 6. SEKRETARIAT DEWAN (Fokus: Deadline Regulasi & Kuorum)
-    elif pilihan_dinas == "Sekretariat Dewan (DPRD)":
-        lokasi = st.selectbox("Agenda Paripurna Terdekat", ["Pengesahan APBD", "LKPJ Bupati", "Perda Inisiatif"])
-        sisa_hari = st.slider("Sisa Waktu Menuju Deadline UU (Hari)", 0, 90, 15)
-        konfirmasi_hadir = st.slider("Konfirmasi Kehadiran Anggota Dewan (%)", 0, 100, 65)
+    # 6. PUPR - *BARU*
+    elif pilihan_dinas == "Dinas Pekerjaan Umum dan Perumahan Rakyat":
+        jalan_putus = st.radio("Laporan Akses Jalan/Jembatan Putus", ["Tidak Ada", "Ada (Terisolir)"])
+        alat_berat = st.radio("Kesiapan Alat Berat (Ekskavator)", ["Siap", "Sedang Digunakan di Lokasi Lain", "Rusak"])
         
-        if sisa_hari <= 7: indeks_risiko += 50
-        elif sisa_hari <= 30: indeks_risiko += 20
-        if konfirmasi_hadir < 50: indeks_risiko += 50 # Tidak Kuorum
-        pesan_peringatan = f"Risiko penundaan ketok palu {lokasi}. Sisa waktu {sisa_hari} hari & kehadiran anggota ({konfirmasi_hadir}%) mendekati batas kuorum."
+        if jalan_putus == "Ada (Terisolir)": indeks_risiko += 70
+        if alat_berat == "Rusak": indeks_risiko += 30
+        pesan_peringatan = f"Darurat Infrastruktur! Akses terputus sementara status alat berat: {alat_berat}."
 
-# Pastikan indeks risiko tidak lebih dari 100
-if indeks_risiko > 100: indeks_risiko = 100
-
-# ==========================================
-# VISUALISASI OUTPUT (SISTEM EWS)
-# ==========================================
-
-with col2:
-    st.subheader("Radar Peringatan Dini")
-    
-    # Progress bar indikator
-    st.progress(indeks_risiko / 100.0)
-    st.metric(label="Level Risiko Instansi Terpilih", value=f"{indeks_risiko}%")
-    
-    # Logika Tampilan Peringatan
-    if indeks_risiko >= 70:
-        st.error(f"🚨 KRITIS (Tindakan Segera)\n\n{pesan_peringatan}")
-        st.button("Terbitkan Surat Perintah Tugas (SPT) Otomatis", type="primary")
-    elif indeks_risiko >= 40:
-        st.warning(f"⚠️ WASPADA (Pemantauan)\n\n{pesan_peringatan}\nMohon siagakan tim lintas-bidang.")
-        st.button("Kirim Notifikasi Pimpinan")
-    else:
-        st.success(f"✅ AMAN & KONDUSIF\n\nSemua parameter operasional pada {pilihan_dinas} berjalan dalam batas normal.")
+    # 7. RSUD MGR GABRIEL MANEK - *BARU*
+    elif pilihan_dinas == "RSUD Mgr. Gabriel Manek, SVD Atambua":
+        bed_occupancy = st.slider("Tingkat Keterisian Tempat Tidur (BOR) %", 0, 100, 65)
+        stok_oksigen = st.radio("Ketersediaan Oksigen/Obat Esensial", ["Aman", "Kritis (< 3 Hari)"])
+        
+        if bed_occupancy > 85: indeks_risiko += 50
+        elif bed_occupancy > 70: indeks_risiko += 25
+        if stok_oksigen == "Kritis (< 3 Hari)": indeks_risiko += 50
+        pesan_peringatan = f"
