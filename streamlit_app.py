@@ -9,156 +9,135 @@ st.write("Portal Satu Data Pemerintah Kabupaten Belu")
 st.markdown("---")
 
 # ==========================================
-# SIDEBAR: DAFTAR SELURUH INSTANSI
+# SIDEBAR: DAFTAR INSTANSI
 # ==========================================
 st.sidebar.title("Navigasi Instansi")
 daftar_dinas = [
     "Sekretariat DPRD", "Inspektorat Daerah", "Dinas Kesehatan", 
     "Dinas Pendidikan, Kepemudaan dan Olahraga", "Dinas Pertanian dan Ketahanan Pangan", 
-    "Dinas Peternakan dan Perikanan", "Dinas Pekerjaan Umum dan Perumahan Rakyat", 
-    "Badan Penanggulangan Bencana Daerah", "RSUD Mgr. Gabriel Manek, SVD Atambua",
-    "Kecamatan Kota Atambua", "Kecamatan Raimanuk" # Tambahkan lainnya sesuai kebutuhan
+    "Dinas Peternakan dan Perikanan", "Badan Penanggulangan Bencana Daerah"
 ]
 
 pilihan_dinas = st.sidebar.selectbox("Instansi Pemantau:", daftar_dinas)
 
-col1, col2 = st.columns([1.5, 1])
+col1, col2 = st.columns([1.6, 1])
 
 indeks_risiko = 0
 pesan_peringatan = []
 
 # ==========================================
-# LOGIKA & PARAMETER BERDASARKAN DINAS
+# LOGIKA & PARAMETER: INSPEKTORAT DAERAH
 # ==========================================
 
 with col1:
-    st.subheader(f"📊 Control Panel: {pilihan_dinas}")
-    
-    if pilihan_dinas == "Sekretariat DPRD":
-        # Menggunakan Tabs untuk mengorganisir 10 fitur agar tidak menumpuk
-        tab_leg, tab_ops, tab_adm = st.tabs(["Legislasi & Anggaran", "Agenda & Reses", "Aspirasi & Internal"])
+    if pilihan_dinas == "Inspektorat Daerah":
+        st.subheader("🔍 Audit & Internal Control Panel")
         
-        with tab_leg:
-            st.write("### 📄 Progres Pembahasan Perda & Anggaran")
-            col_a, col_b = st.columns(2)
-            with col_a:
-                raperda_masuk = st.number_input("Jumlah Raperda Masuk", 1, 50, 10)
-                raperda_disahkan = st.number_input("Jumlah Raperda Disahkan", 0, 50, 2)
-                progres_perda = (raperda_disahkan / raperda_masuk) * 100
-                st.caption(f"Capaian Legislasi: {progres_perda:.1f}%")
-                if progres_perda < 30: 
-                    indeks_risiko += 20
-                    pesan_peringatan.append("Bottleneck Legislasi: Rasio pengesahan Raperda rendah.")
-
-            with col_b:
-                st.write("### 💰 Realisasi Anggaran")
-                serapan = st.slider("Serapan Anggaran Sekretariat (%)", 0, 100, 45)
-                if serapan < 20:
-                    indeks_risiko += 15
-                    pesan_peringatan.append("Serapan Anggaran Terlalu Rendah (Indikasi Program Macet).")
-                elif serapan > 90:
-                    indeks_risiko += 10
-                    pesan_peringatan.append("Serapan Anggaran Mendekati Pagu (Waspada Overbudget).")
-
-        with tab_ops:
-            st.write("### ⚠️ Agenda & Kinerja Anggota")
-            col_c, col_d = st.columns(2)
-            with col_c:
-                kehadiran = st.slider("Rata-rata Kehadiran Rapat (%)", 0, 100, 65)
-                kuorum_status = "Tercapai" if kehadiran >= 50 else "Tidak Kuorum"
-                st.info(f"Status Kuorum: {kuorum_status}")
-                if kehadiran < 50:
+        tab_audit, tab_risiko, tab_fraud = st.tabs(["Temuan & PKPT", "Risiko OPD & Kepatuhan", "Fraud & Whistleblowing"])
+        
+        with tab_audit:
+            st.write("### 🚨 1. Temuan Audit & Progres PKPT")
+            c1, c2 = st.columns(2)
+            with c1:
+                temuan_total = st.number_input("Total Temuan Audit", 1, 1000, 50)
+                temuan_pending = st.number_input("Temuan Belum Ditindaklanjuti > 60 Hari", 0, 500, 12)
+                if temuan_pending > 10:
                     indeks_risiko += 30
-                    pesan_peringatan.append("RISIKO KUORUM: Kehadiran di bawah batas minimal (50%).")
+                    pesan_peringatan.append(f"CRITICAL: {temuan_pending} temuan audit kadaluarsa (Stagnan).")
             
-            with col_d:
-                deadline_agenda = st.selectbox("Agenda Terdekat", ["Paripurna LKPJ", "Rapat Komisi", "Badan Anggaran"])
-                hari_h = st.number_input("Sisa Hari Menuju Pelaksanaan", 0, 30, 2)
-                konfirmasi = st.radio("Konfirmasi Peserta H-1", ["Lengkap", "Belum Lengkap"])
-                if hari_h <= 1 and konfirmasi == "Belum Lengkap":
-                    indeks_risiko += 25
-                    pesan_peringatan.append(f"Agenda {deadline_agenda} H-1 belum terkonfirmasi penuh.")
-
-            st.write("### 📊 Monitoring Reses")
-            laporan_reses = st.radio("Status Laporan Reses Anggota", ["Sudah Masuk Semua", "Ada yang Belum Melaporkan"])
-            if laporan_reses == "Ada yang Belum Melaporkan":
-                indeks_risiko += 15
-                pesan_peringatan.append("Keterlambatan Administrasi: Laporan Reses belum lengkap.")
-
-        with tab_adm:
-            st.write("### 📬 Aspirasi, Surat & Sistem")
-            col_e, col_f = st.columns(2)
-            with col_e:
-                aduan_masuk = st.number_input("Aduan Masyarakat Baru", 0, 100, 25)
-                aduan_tertunda = st.number_input("Aduan Belum Ditindaklanjuti > 7 Hari", 0, 100, 10)
-                if aduan_tertunda > 5:
+            with c2:
+                target_audit = st.number_input("Target Audit Tahunan (PKPT)", 1, 100, 20)
+                realisasi_audit = st.number_input("Audit Selesai", 0, 100, 8)
+                persen_pkpt = (realisasi_audit / target_audit) * 100
+                st.caption(f"Realisasi PKPT: {persen_pkpt:.1f}%")
+                if persen_pkpt < 40:
                     indeks_risiko += 20
-                    pesan_peringatan.append("Respon Publik Lambat: Aduan masyarakat menumpuk.")
+                    pesan_peringatan.append("PROGRES RENDAH: Realisasi PKPT di bawah target tahunan.")
 
-            with col_f:
-                st.write("### 🔐 Kepatuhan & IKU")
-                iku_capaian = st.slider("Capaian IKU Tahunan (%)", 0, 100, 75)
-                status_sistem = st.toggle("Status Server & Database", value=True)
-                if not status_sistem:
-                    indeks_risiko += 40
-                    pesan_peringatan.append("ERROR TEKNIS: Database/Server Sekretariat Down!")
-                if iku_capaian < 50:
-                    indeks_risiko += 10
-                    pesan_peringatan.append("Capaian IKU di bawah target tengah tahun.")
+        with tab_risiko:
+            st.write("### 📊 2. Heatmap Risiko & Kepatuhan OPD")
+            # Simulasi Ranking Risiko OPD
+            data_opd = pd.DataFrame({
+                'OPD': ['Dinas PUPR', 'Dinas Pendidikan', 'Dinas Kesehatan', 'Kec. Raimanuk', 'Kec. Kota'],
+                'Skor_Risiko': [85, 70, 45, 30, 20],
+                'Status': ['Tinggi', 'Tinggi', 'Sedang', 'Rendah', 'Rendah']
+            })
+            
+            # Menampilkan Heatmap Sederhana
+            st.table(data_opd)
+            opd_tinggi = len(data_opd[data_opd['Skor_Risiko'] >= 70])
+            if opd_tinggi > 2:
+                indeks_risiko += 25
+                pesan_peringatan.append(f"WARNING: Terdapat {opd_tinggi} OPD dengan kategori Risiko Tinggi.")
+
+            st.write("### 📑 Kepatuhan Laporan (SPJ/LK)")
+            kepatuhan = st.slider("Persentase Kepatuhan Pelaporan OPD (%)", 0, 100, 85)
+            if kepatuhan < 80:
+                indeks_risiko += 15
+                pesan_peringatan.append("KEPATUHAN RENDAH: Banyak OPD terlambat menyetor SPJ/Laporan.")
+
+        with tab_fraud:
+            st.write("### 🧾 7. Indikasi Fraud & Whistleblowing")
+            col_f1, col_f2 = st.columns(2)
+            with col_f1:
+                aduan_ws = st.number_input("Aduan Masuk (Whistleblowing)", 0, 100, 5)
+                aduan_proses = st.number_input("Aduan Belum Diproses", 0, 100, 5)
+                if aduan_proses > 0:
+                    indeks_risiko += 15
+                    pesan_peringatan.append(f"SLA OVER: {aduan_proses} aduan masyarakat belum ditangani.")
+            
+            with col_f2:
+                anomali_keu = st.toggle("Deteksi Transaksi Mencurigakan (Anomali Anggaran)", value=True)
+                if anomali_keu:
+                    indeks_risiko += 20
+                    pesan_peringatan.append("FRAUD ALERT: Terdeteksi pola realisasi anggaran tidak wajar.")
 
     # ---------------------------------------------------------
-    # BLOK DINAS LAIN (Sederhana untuk Contoh)
+    # BLOK INSTANSI LAIN (Contoh Singkat)
     # ---------------------------------------------------------
-    elif pilihan_dinas == "Dinas Kesehatan":
-        st.write("### 🏥 Parameter Kesehatan")
-        bor = st.slider("Keterisian RS (BOR) %", 0, 100, 50)
-        if bor > 80: 
-            indeks_risiko = 90
-            pesan_peringatan.append("Kapasitas Rumah Sakit Kritis!")
-        else:
-            pesan_peringatan.append("Kondisi fasilitas kesehatan normal.")
-
     else:
-        st.info("Form Pelaporan Standar untuk instansi terpilih.")
-        urgensi = st.select_slider("Tingkat Urgensi", options=["Rendah", "Sedang", "Tinggi", "Kritis"])
-        if urgensi == "Kritis": indeks_risiko = 100
-        pesan_peringatan.append(f"Laporan masuk dengan tingkat urgensi {urgensi}.")
+        st.info(f"Dashboard untuk {pilihan_dinas} sedang dalam pengembangan.")
+        indeks_risiko = 0
 
 # ==========================================
-# VISUALISASI OUTPUT (SISTEM EWS)
+# VISUALISASI OUTPUT (RADAR INSPEKTORAT)
 # ==========================================
 
 with col2:
-    st.subheader("Radar Peringatan Dini")
+    st.subheader("Radar Pengawasan Internal")
     
-    # Normalisasi indeks risiko (max 100)
     final_score = min(indeks_risiko, 100)
     
-    # Indikator Visual Berdasarkan Skor
-    if final_score >= 70:
-        color = "red"
-        status_text = "🚨 KRITIS / BAHAYA"
-    elif final_score >= 40:
-        color = "orange"
-        status_text = "⚠️ WASPADA"
+    # Warna berdasarkan Level Risiko
+    if final_score >= 75:
+        color = "#FF0000" # Merah
+        status = "KRITIS / BAHAYA"
+    elif final_score >= 45:
+        color = "#FFA500" # Oranye
+        status = "WASPADA"
     else:
-        color = "green"
-        status_text = "✅ AMAN"
+        color = "#008000" # Hijau
+        status = "AMAN"
 
-    st.markdown(f"<h1 style='text-align: center; color: {color};'>{final_score}%</h1>", unsafe_allow_html=True)
-    st.progress(final_score / 100)
-    st.write(f"**Status:** {status_text}")
+    # Gauge Visual
+    st.markdown(f"""
+        <div style="background-color:{color}; padding:20px; border-radius:10px; text-align:center;">
+            <h1 style="color:white; margin:0;">{final_score}%</h1>
+            <p style="color:white; margin:0; font-weight:bold;">Status: {status}</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
     st.markdown("---")
-
+    
     if pesan_peringatan:
-        st.write("**Daftar Isu Terdeteksi:**")
+        st.write("**Daftar Isu Strategis:**")
         for p in pesan_peringatan:
-            if final_score >= 70:
+            if "CRITICAL" in p or "FRAUD" in p:
                 st.error(p)
-            elif final_score >= 40:
+            elif "WARNING" in p or "RENDAH" in p:
                 st.warning(p)
             else:
-                st.success(p)
+                st.info(p)
     
-    st.button("Cetak Laporan Executive Summary")
-    st.button("Kirim Alert ke Grup WhatsApp Pimpinan")
+    st.button("📥 Unduh Laporan Rekomendasi Audit")
+    st.button("🔔 Kirim Notifikasi ke OPD Terkait")
