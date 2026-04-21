@@ -13,7 +13,10 @@ st.set_page_config(page_title="EWS Belu", layout="wide")
 # ==============================
 def get_connection():
     return mysql.connector.connect(
-        host="localhost",
+        host="your-host"
+        user="your-username"
+        password="your-password"
+        database="db_dinas"
         user="root",
         password="",
         database="db_dinas"
