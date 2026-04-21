@@ -1,39 +1,34 @@
-import json
-import os
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+import streamlit as st
+import pandas as pd
+from datetime import datetime
 
-FILE_DB = "data_ews.json"
+# ==============================
+# KONEKSI GOOGLE SHEETS
+# ==============================
+def connect_gsheet():
+    scope = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/drive"
+    ]
 
-def load_data():
-    if os.path.exists(FILE_DB):
-        with open(FILE_DB, "r") as f:
-            return json.load(f)
-    return []
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(
+        st.secrets["gcp_service_account"], scope
+    )
 
-def save_data(data):
-    with open(FILE_DB, "w") as f:
-        json.dump(data, f, indent=4)
+    client = gspread.authorize(creds)
+
+    sheet = client.open_by_key("ISI_SPREADSHEET_ID").sheet1
+    return sheet
 
 def simpan_data(dinas, parameter, indeks, status):
-    data = load_data()
+    sheet = connect_gsheet()
 
-    data.append({
-        "waktu": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "dinas": dinas,
-        "parameter": parameter,
-        "indeks": indeks,
-        "status": status
-    })
-
-    save_data(data)
-
-def ambil_data():
-    return pd.DataFrame(load_data())
-
-df = ambil_data()
-
-if not df.empty:
-    st.subheader("📊 Data Tersimpan")
-    st.dataframe(df)
-
-    st.subheader("📈 Grafik Risiko")
-    st.line_chart(df["indeks"])
+    sheet.append_row([
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        dinas,
+        parameter,
+        indeks,
+        status
+    ])
