@@ -32,3 +32,18 @@ def simpan_data(dinas, parameter, indeks, status):
         indeks,
         status
     ])
+
+def ambil_data():
+    sheet = connect_gsheet()
+    data = sheet.get_all_records()
+    return pd.DataFrame(data)
+
+df = ambil_data()
+
+if not df.empty:
+    st.dataframe(df)
+
+    st.subheader("📈 Grafik Risiko")
+    st.line_chart(df["indeks"])
+else:
+    st.info("Belum ada data")
