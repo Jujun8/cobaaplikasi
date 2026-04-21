@@ -28,3 +28,12 @@ def simpan_data(dinas, parameter, indeks, status):
 
 def ambil_data():
     return pd.DataFrame(load_data())
+
+df = ambil_data()
+
+if not df.empty:
+    st.subheader("📊 Data Tersimpan")
+    st.dataframe(df)
+
+    st.subheader("📈 Grafik Risiko")
+    st.line_chart(df["indeks"])
