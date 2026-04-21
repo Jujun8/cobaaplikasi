@@ -159,4 +159,4 @@ with col1:
         if bed_occupancy > 85: indeks_risiko += 50
         elif bed_occupancy > 70: indeks_risiko += 25
         if stok_oksigen == "Kritis (< 3 Hari)": indeks_risiko += 50
-        pesan_peringatan = f"
+        pesan_peringatan = f"Terdeteksi penumpukan {jumlah_kasus} kasus/isu terkait {jenis_laporan} dengan tingkat urgensi {tingkat_urgensi}."
